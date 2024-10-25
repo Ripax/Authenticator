@@ -22,7 +22,6 @@ VERSION ?= $(version)
 AUTH_CONTENT = '{\n    "anbi": {\n        "chennai": "",\n        "mumbai": "",\n        "london": "",\n        "vancouver": "",\n        "sydney": "",\n        "montreal": ""\n    }\n}'
 
 
-
 # Define the installation target
 install: pre_install copy_files clean_hidden admin update_desktop
 	@echo "version path: $(INSTALL_DIR)/$(INSTALL_VERSION)"
@@ -81,6 +80,7 @@ copy_files:
 	@echo "Files copied to $(INSTALL_DIR)/$(INSTALL_VERSION)."
 	@touch  $(INSTALL_DIR)/$(INSTALL_VERSION)/.auth
 	@echo "$(AUTH_CONTENT)" > $(INSTALL_DIR)/$(INSTALL_VERSION)/.auth
+
 
 update:
 	@echo "Initializing the update from the repo..."

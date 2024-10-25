@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+
 # Set the project directory (replace this with your actual project directory)
 PROJECT_DIR="$(SOFTWARE)/Authenticator"
 
