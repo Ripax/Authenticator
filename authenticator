@@ -1,14 +1,24 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 
 # Set the project directory (replace this with your actual project directory)
 PROJECT_DIR="$(SOFTWARE)/Authenticator"
 
 # Change to the project directory
 # shellcheck disable=SC2164
-cd "$PROJECT_DIR"
-
+cd "$PROJECT_DIR" || {
+    echo "Error: Could not change to project directory: $PROJECT_DIR"
+    exit 1
+}
 # (Optional) Activate virtual environment
 # source venv/bin/activate  # Uncomment this if you're using a virtual environment
 
 # Run the Python application
-/usr/bin/python3.12 auth.py  # Replace 'main.py' with the main entry point of your Python project
+PYTHON_EXEC="/usr/bin/python3.12"  # Specify the Python interpreter
+ENTRY_POINT="auth.py"                # Replace with your main entry point
+
+# Execute the Python application
+"$PYTHON_EXEC" "$ENTRY_POINT" || {
+    echo "Error: Failed to run $ENTRY_POINT"
+    exit 1
+}

@@ -11,18 +11,19 @@ VERSION_FILE = $(SOURCE_DIR)/__version__
 INSTALL_VERSION = $(shell cat $(VERSION_FILE) 2>/dev/null)
 SOFTWARE_DIR = $(SOFTWARE)
 INSTALL_DIR = $(SOFTWARE_DIR)/$(PROJECT_NAME)
+DESKTOP_FILE = $(INSTALL_DIR)/$(INSTALL_VERSION)/2fa-authenticator.desktop
+AUTHENTICATOR_FILE = $(INSTALL_DIR)/$(INSTALL_VERSION)/authenticator
 
 USERNAME := rion
-TOKEN_FILE := .af_token
-EXPECTED_TOKEN := "671b85bc-8e2c-800b-a33a-a6ae08601313"
 AUTH_URL := https://gist.githubusercontent.com/Ripax/1f4343f63c5bdce4333ff8f539eceb05/raw/5dbb7b94f9b1c4341db1bca63e9e615385351193/.auth
 
 VERSION ?= $(version)
 
 AUTH_CONTENT = '{\n    "anbi": {\n        "chennai": "",\n        "mumbai": "",\n        "london": "",\n        "vancouver": "",\n        "sydney": "",\n        "montreal": ""\n    }\n}'
 
+
 # Define the installation target
-install: pre_install copy_files clean_hidden hidden_update
+install: pre_install copy_files clean_hidden admin update_desktop
 	@echo "version path: $(INSTALL_DIR)/$(INSTALL_VERSION)"
 	@echo "Installing version: $(VERSION)"
 	@echo "Installed version: $(INSTALL_VERSION)"
@@ -40,6 +41,17 @@ pre_install:
 	else \
 		echo "Repository already exists. Pulling the latest changes..."; \
 		git -C "$(.TEMP)" pull; \
+	fi
+
+update_desktop:
+	@if [ -f "$(DESKTOP_FILE)" ]; then \
+		sed -i 's/^Version=.*/Version=$(INSTALL_VERSION)/' "$(DESKTOP_FILE)"; \
+		sed -i 's|^Exec=.*|Exec=$(INSTALL_DIR)/$(INSTALL_VERSION)/authenticator|' "$(DESKTOP_FILE)"; \
+		sed -i 's|^Icon=.*|Icon=$(INSTALL_DIR)/$(INSTALL_VERSION)/icon/2fa.png|' "$(DESKTOP_FILE)"; \
+		sed -i 's|^PROJECT_DIR=.*|PROJECT_DIR=$(INSTALL_DIR)/$(INSTALL_VERSION)/' "$(AUTHENTICATOR_FILE)"; \
+		echo "Updated desktop file: $(DESKTOP_FILE)"; \
+	else \
+		echo "Desktop file not found: $(DESKTOP_FILE)"; \
 	fi
 
 help:
@@ -62,12 +74,13 @@ test:
 	@echo "Install Dir: $(INSTALL_DIR)"
 
 copy_files:
-	@mkdir -p -v $(INSTALL_DIR)/$(VERSION)
-	@cp -rv $(SOURCE_DIR)/* $(INSTALL_DIR)/$(VERSION)
-	@mv -v $(INSTALL_DIR)/$(VERSION)/__version__ $(INSTALL_DIR)/$(VERSION)/.version
-	@echo "Files copied to $(INSTALL_DIR)/$(VERSION)."
-	@touch -v $(INSTALL_DIR)/$(VERSION)/.auth
-	@echo "$(AUTH_CONTENT)" > $(INSTALL_DIR)/$(VERSION)/.auth
+	@mkdir -p -v $(INSTALL_DIR)/$(INSTALL_VERSION)
+	@cp -rv $(SOURCE_DIR)/* $(INSTALL_DIR)/$(INSTALL_VERSION)
+	@mv -v $(INSTALL_DIR)/$(INSTALL_VERSION)/__version__ $(INSTALL_DIR)/$(INSTALL_VERSION)/.version
+	@echo "Files copied to $(INSTALL_DIR)/$(INSTALL_VERSION)."
+	@touch  $(INSTALL_DIR)/$(INSTALL_VERSION)/.auth
+	@echo "$(AUTH_CONTENT)" > $(INSTALL_DIR)/$(INSTALL_VERSION)/.auth
+
 
 update:
 	@echo "Initializing the update from the repo..."
@@ -118,15 +131,12 @@ uninstall:
 	fi
 
 admin:
-	@if [ "$(username)" != "$(USERNAME)" ] || [ ! -f "$(TOKEN_FILE)" ]; then \
-	    echo "Warning: Either username is not set to '$(USERNAME)' or $(TOKEN_FILE) file is missing. Exiting."; \
+	@if [ "$(USER)" != "$(USERNAME)" ]; then \
+	    echo "Warning: Doesn't look like you are the admin."; \
 	    exit 1; \
 	fi
-	@if ! grep -q $(EXPECTED_TOKEN) "$(TOKEN_FILE)"; then \
-	    echo "Warning: Expected token not found in $(TOKEN_FILE). Exiting."; \
-	    exit 1; \
-	fi
-	@echo -e "${GREEN}Hello $(USER),\n*********** admin ***********${ENDCOLOR}"
-	find "$(INSTALL_DIR)/$(VERSION)" -type f -name '.auth' -exec rm -rf {} +; \
-	@curl -o $(INSTALL_DIR)/.auth $(AUTH_URL)
+	@echo "${GREEN}Hello $(USER),"; \
+	echo "*********** admin ***********${ENDCOLOR}"
+	find "$(INSTALL_DIR)/$(INSTALL_VERSION)" -type f -name '.auth' -exec rm -rf {} +; \
+	curl -o $(INSTALL_DIR)/$(INSTALL_VERSION)/.auth $(AUTH_URL)
 	@echo "Work completed successfully."

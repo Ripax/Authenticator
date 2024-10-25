@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=2.0.0
+Type=Application
+Name=Authenticator
+GenericName=Authenticator
+Exec=/software/Authenticator/2.0.0/authenticator
+Icon=/software/Authenticator/2.0.0/icon/2fa.png
+Terminal=false
+StartupNotify=false
+Categories=Other
