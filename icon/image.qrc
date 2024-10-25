@@ -1,0 +1,12 @@
+<RCC>
+  <qresource prefix="icon">
+    <file>2fa.png</file>
+    <file>computer.png</file>
+    <file>copy.png</file>
+    <file>copy_green.png</file>
+    <file>copy_v01.png</file>
+    <file>copy_v02.png</file>
+    <file>copy_v03.png</file>
+    <file>document.png</file>
+  </qresource>
+</RCC>

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Set the project directory (replace this with your actual project directory)
+PROJECT_DIR="/home/rion/dev/2AF-Authenticator"
+
+# Change to the project directory
+# shellcheck disable=SC2164
+cd "$PROJECT_DIR"
+
+# (Optional) Activate virtual environment
+# source venv/bin/activate  # Uncomment this if you're using a virtual environment
+
+# Run the Python application
+/usr/bin/python3.12 auth.py  # Replace 'main.py' with the main entry point of your Python project
