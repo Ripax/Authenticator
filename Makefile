@@ -21,8 +21,6 @@ VERSION ?= $(version)
 
 AUTH_CONTENT = '{\n    "anbi": {\n        "chennai": "",\n        "mumbai": "",\n        "london": "",\n        "vancouver": "",\n        "sydney": "",\n        "montreal": ""\n    }\n}'
 
-
-
 # Define the installation target
 install: pre_install copy_files clean_hidden hidden_update
 	@echo "version path: $(INSTALL_DIR)/$(INSTALL_VERSION)"
