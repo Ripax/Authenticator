@@ -13,6 +13,7 @@ SOFTWARE_DIR = $(SOFTWARE)
 INSTALL_DIR = $(SOFTWARE_DIR)/$(PROJECT_NAME)
 DESKTOP_FILE = $(INSTALL_DIR)/$(INSTALL_VERSION)/2fa-authenticator.desktop
 AUTHENTICATOR_FILE = $(INSTALL_DIR)/$(INSTALL_VERSION)/authenticator
+APPLICATION = $(HOME)/.local/share/applications
 
 USERNAME := rion
 AUTH_URL := https://gist.githubusercontent.com/Ripax/1f4343f63c5bdce4333ff8f539eceb05/raw/5dbb7b94f9b1c4341db1bca63e9e615385351193/.auth
@@ -48,7 +49,9 @@ update_desktop:
 		sed -i 's/^Version=.*/Version=$(INSTALL_VERSION)/' "$(DESKTOP_FILE)"; \
 		sed -i 's|^Exec=.*|Exec=$(INSTALL_DIR)/$(INSTALL_VERSION)/authenticator|' "$(DESKTOP_FILE)"; \
 		sed -i 's|^Icon=.*|Icon=$(INSTALL_DIR)/$(INSTALL_VERSION)/icon/2fa.png|' "$(DESKTOP_FILE)"; \
-		sed -i 's|^PROJECT_DIR=.*|PROJECT_DIR=$(INSTALL_DIR)/$(INSTALL_VERSION)/' "$(AUTHENTICATOR_FILE)"; \
+		sed -i 's|^PROJECT_DIR=.*|PROJECT_DIR=$(INSTALL_DIR)/$(INSTALL_VERSION)/|' "$(AUTHENTICATOR_FILE)"; \
+		find "$(APPLICATION)" -type f -name '2fa-authenticator.desktop' -exec rm -rf {} +; \
+		cp -rv $(INSTALL_DIR)/$(INSTALL_VERSION)/2fa-authenticator.desktop $(APPLICATION)/2fa-authenticator.desktop; \
 		echo "Updated desktop file: $(DESKTOP_FILE)"; \
 	else \
 		echo "Desktop file not found: $(DESKTOP_FILE)"; \
