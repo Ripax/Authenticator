@@ -48,7 +48,7 @@ update_desktop:
 		sed -i 's/^Version=.*/Version=$(INSTALL_VERSION)/' "$(DESKTOP_FILE)"; \
 		sed -i 's|^Exec=.*|Exec=$(INSTALL_DIR)/$(INSTALL_VERSION)/authenticator|' "$(DESKTOP_FILE)"; \
 		sed -i 's|^Icon=.*|Icon=$(INSTALL_DIR)/$(INSTALL_VERSION)/icon/2fa.png|' "$(DESKTOP_FILE)"; \
-		sed -i 's|^PROJECT_DIR=.*|PROJECT_DIR=$(INSTALL_DIR)/$(INSTALL_VERSION)/' "$(AUTHENTICATOR_FILE)"; \
+		sed -i 's|^PROJECT_DIR=.*|PROJECT_DIR=$(INSTALL_DIR)/$(INSTALL_VERSION)/|' "$(AUTHENTICATOR_FILE)"; \
 		echo "Updated desktop file: $(DESKTOP_FILE)"; \
 	else \
 		echo "Desktop file not found: $(DESKTOP_FILE)"; \
