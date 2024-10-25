@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set the project directory (replace this with your actual project directory)
-PROJECT_DIR="$(HOME)/dev/Authenticator"
+PROJECT_DIR="$(SOFTWARE)/Authenticator"
 
 # Change to the project directory
 # shellcheck disable=SC2164
