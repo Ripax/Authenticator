@@ -1,4 +1,8 @@
 # Dynamically determine the project name from the current directory
+RED="\e[31m"
+GREEN="\e[32m"
+ENDCOLOR="\e[0m"
+
 REPO_URL="https://github.com/Ripax/Authenticator.git"
 PROJECT_NAME = $(shell basename $(CURDIR) | sed 's/-/_/g')
 .TEMP = $(HOME)/.tmp
@@ -7,6 +11,11 @@ VERSION_FILE = $(SOURCE_DIR)/__version__
 INSTALL_VERSION = $(shell cat $(VERSION_FILE) 2>/dev/null)
 SOFTWARE_DIR = $(SOFTWARE)
 INSTALL_DIR = $(SOFTWARE_DIR)/$(PROJECT_NAME)
+
+USERNAME := rion
+TOKEN_FILE := .af_token
+EXPECTED_TOKEN := "671b85bc-8e2c-800b-a33a-a6ae08601313"
+AUTH_URL := https://gist.githubusercontent.com/Ripax/1f4343f63c5bdce4333ff8f539eceb05/raw/5dbb7b94f9b1c4341db1bca63e9e615385351193/.auth
 
 VERSION ?= $(version)
 
@@ -60,7 +69,6 @@ copy_files:
 	@touch -v $(INSTALL_DIR)/$(VERSION)/.auth
 	@echo "$(AUTH_CONTENT)" > $(INSTALL_DIR)/$(VERSION)/.auth
 
-
 update:
 	@echo "Initializing the update from the repo..."
 	@$(MAKE) copy_files
@@ -108,3 +116,17 @@ uninstall:
 	else \
 		echo "Uninstall aborted."; \
 	fi
+
+admin:
+	@if [ "$(username)" != "$(USERNAME)" ] || [ ! -f "$(TOKEN_FILE)" ]; then \
+	    echo "Warning: Either username is not set to '$(USERNAME)' or $(TOKEN_FILE) file is missing. Exiting."; \
+	    exit 1; \
+	fi
+	@if ! grep -q $(EXPECTED_TOKEN) "$(TOKEN_FILE)"; then \
+	    echo "Warning: Expected token not found in $(TOKEN_FILE). Exiting."; \
+	    exit 1; \
+	fi
+	@echo -e "${GREEN}Hello $(USER),\n*********** admin ***********${ENDCOLOR}"
+	find "$(INSTALL_DIR)/$(VERSION)" -type f -name '.auth' -exec rm -rf {} +; \
+	@curl -o $(INSTALL_DIR)/.auth $(AUTH_URL)
+	@echo "Work completed successfully."
