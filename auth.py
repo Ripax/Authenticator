@@ -2,6 +2,8 @@
 # Author : Anupam Biswas
 # Date : 23 september 2024
 # app name : 2 ass fuck Authenticator.
+from PyQt5.QtGui import QIcon
+
 
 def info():
     __Author__ = 'Anupam Biswas'
@@ -30,8 +32,26 @@ year = date.strftime("%Y")
 username = os.getlogin()
 
 
+def load_auth_data(filepath=".auth"):
+    if not os.path.exists(filepath):
+        with open(filepath, "w") as file:
+            json.dump({username: {}}, file)  # Default empty structure
+    try:
+        with open(filepath, "r") as file:
+            return json.load(file)
+    except json.JSONDecodeError:
+        print(f""
+              f"Please check your "
+              f"{
+              filepath
+              } file," 
+              f"it's json based file "
+              f" please be careful while you  edit this."
+              )
+
+
 class authenticator(Ui_authenticator, QWidget):
-    def __init__(self):
+    def __init__(self, authdata):
         super(authenticator, self).__init__()
         self.setupUi(self)
         self.setWindowTitle(f"[2fA] Authenticator app {username}")
@@ -39,8 +59,16 @@ class authenticator(Ui_authenticator, QWidget):
         icon.addPixmap(QtGui.QPixmap(":/icon/computer.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.pushButton.setIcon(icon)
         self.icon.setPixmap(QtGui.QPixmap(":/icon/2fa.png"))
+
+        # set data to Combobox from .auth data.
+        locations = authdata.get(username, {})
+        cur_path = os.getcwd()
+        for location in locations.keys():
+            icon_path = f"{cur_path}/icon/{location}_icon.png"
+            icon = QtGui.QIcon(icon_path)
+            self.sites_comboBox.addItem(icon, location)
+
         # set Enable Mumbai as default site for authenticator.
-        self.mumbai.setChecked(True)
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
 
         self.otp.setStyleSheet(u"color: rgb(56, 242, 227);")
@@ -53,36 +81,28 @@ class authenticator(Ui_authenticator, QWidget):
         # Adding shadow to the label
         self.otp.setGraphicsEffect(shadow)
 
-
-
         self.pushButton.clicked.connect(self.copy_totp)
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_totp)
         self.timer.start(1000)
 
-        self.tog_radio_button()
+        self.toggle_sites()
+        self.sites_comboBox.currentIndexChanged.connect(self.toggle_sites)
 
-        self.mumbai.toggled.connect(self.tog_radio_button)
-        self.chennai.toggled.connect(self.tog_radio_button)
-
-    def seceret_code(self, site):
+    @staticmethod
+    def seceret_code(site):
         with open('.auth', 'r') as data:
             auth = json.load(data)
-        return auth['anbi'][site]
+        return auth[username][site]
 
-    def tog_radio_button(self):
-        name = "mumbai"
-        radioButton = self.sender()
-        if radioButton and radioButton.isChecked():
-            name = lower(radioButton.text())
-
-        self.generate_totp(secret=self.seceret_code(name))
+    def toggle_sites(self):
+        _location = self.sites_comboBox.currentText()
+        self.generate_totp(secret=self.seceret_code(_location))
 
 
     def generate_totp(self, secret=None):
         # Get the secret from the QRCode, which is shared by your Organization.
-
         if not secret:
             QMessageBox.warning(self, "Error", "No secret provided.")
             return
@@ -113,7 +133,6 @@ class authenticator(Ui_authenticator, QWidget):
 
     def copy_totp(self):
         totp = self.otp.text()
-        print(totp)
         clipboard = QApplication.clipboard()
         clipboard.setText(str(totp))
         # QMessageBox.information(self, "Information", "Copied.")
@@ -124,7 +143,8 @@ class authenticator(Ui_authenticator, QWidget):
 
 # For widgets
 if __name__ == '__main__':
-    app = QApplication([])
-    widgets = authenticator()
+    auth_data = load_auth_data()
+    app = QApplication(sys.argv)
+    widgets = authenticator(auth_data)
     widgets.show()
     sys.exit(app.exec_())
