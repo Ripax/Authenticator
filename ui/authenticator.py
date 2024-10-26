@@ -73,12 +73,9 @@ class Ui_authenticator(object):
         self.horizontalLayout_2.setContentsMargins(2, 2, 2, 2)
         self.horizontalLayout_2.setSpacing(0)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        self.mumbai = QtWidgets.QRadioButton(self.frame_sites)
-        self.mumbai.setObjectName("mumbai")
-        self.horizontalLayout_2.addWidget(self.mumbai)
-        self.chennai = QtWidgets.QRadioButton(self.frame_sites)
-        self.chennai.setObjectName("chennai")
-        self.horizontalLayout_2.addWidget(self.chennai)
+        self.sites_comboBox = QtWidgets.QComboBox(self.frame_sites)
+        self.sites_comboBox.setObjectName("sites_comboBox")
+        self.horizontalLayout_2.addWidget(self.sites_comboBox)
         self.verticalLayout_2.addWidget(self.frame_sites)
         self.pushButton = QtWidgets.QPushButton(self.frame)
         self.pushButton.setMinimumSize(QtCore.QSize(82, 82))
@@ -152,13 +149,12 @@ class Ui_authenticator(object):
 
         self.retranslateUi(authenticator)
         QtCore.QMetaObject.connectSlotsByName(authenticator)
+        authenticator.setTabOrder(self.pushButton, self.sites_comboBox)
 
     def retranslateUi(self, authenticator):
         _translate = QtCore.QCoreApplication.translate
         authenticator.setWindowTitle(_translate("authenticator", "2fa for dneg"))
-        self.mumbai.setText(_translate("authenticator", "Mumbai"))
-        self.chennai.setText(_translate("authenticator", "Chennai"))
-        self.pushButton.setText(_translate("authenticator", "   Copy"))
+        self.pushButton.setText(_translate("authenticator", " Copy"))
         self.time_check.setText(_translate("authenticator", "60"))
         self.label_creadit.setToolTip(_translate("authenticator", "@Copyright 2024"))
         self.label_creadit.setText(_translate("authenticator", "@HTMLDigger"))
