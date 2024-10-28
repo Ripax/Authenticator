@@ -21,7 +21,6 @@ import pyotp
 from PyQt5 import QtGui
 from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtWidgets import QApplication, QWidget, QGraphicsDropShadowEffect, QMessageBox
-from soupsieve.util import lower
 
 from ui.authenticator import Ui_authenticator
 from icon import resource
