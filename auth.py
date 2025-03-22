@@ -23,6 +23,7 @@ from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtWidgets import QApplication, QWidget, QGraphicsDropShadowEffect, QMessageBox
 
 from ui.authenticator import Ui_authenticator
+from utils._utils_config import AuthFileManager
 from icon import resource
 
 date = datetime.now()
@@ -30,8 +31,9 @@ month = date.strftime("%B")
 year = date.strftime("%Y")
 username = os.getlogin()
 
+configuration = AuthFileManager()
 
-def load_auth_data(filepath=".auth"):
+def load_auth_data(filepath=configuration.get_auth_path()):
     if not os.path.exists(filepath):
         with open(filepath, "w") as file:
             json.dump({username: {}}, file)  # Default empty structure
@@ -145,5 +147,6 @@ if __name__ == '__main__':
     auth_data = load_auth_data()
     app = QApplication(sys.argv)
     widgets = authenticator(auth_data)
+    configuration.load_stylesheet(app)
     widgets.show()
     sys.exit(app.exec_())
