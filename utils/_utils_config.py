@@ -15,7 +15,7 @@ class AuthFileManager:
         if self.system == "Windows":
             auth_dir = os.environ["USERPROFILE"]
         else:  # Linux or macOS (Darwin)
-            auth_dir = os.path.join(os.environ["HOME"], "config")
+            auth_dir = os.path.join(os.environ["HOME"], "config/authenticator/configs")
 
         return os.path.join(auth_dir, ".auth")
 
@@ -72,7 +72,7 @@ class AuthFileManager:
 
     def load_stylesheet(self, app):
         home_path = os.path.expanduser("~")  # Expands `~` to the user's home directory
-        custom_qss = os.path.join(home_path, "config", "mainUI.qss")
+        custom_qss = os.path.join(home_path, "config/authenticator/configs", "mainUI.qss")
         default_qss = "ui/qss/mainUI.qss"
 
         qss_file = custom_qss if os.path.exists(custom_qss) else default_qss

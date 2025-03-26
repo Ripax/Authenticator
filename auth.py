@@ -62,10 +62,20 @@ class authenticator(Ui_authenticator, QWidget):
         self.icon.setPixmap(QtGui.QPixmap(":/icon/2fa.png"))
 
         # set data to Combobox from .auth data.
+        config_icon_path = os.path.expanduser("~/config/authenticator/icons")
         locations = authdata.get(username, {})
         cur_path = os.getcwd()
+        print(f"Location : {locations}\nCurrent path : {cur_path}")
+
         for location in locations.keys():
-            icon_path = f"{cur_path}/icon/{location}_icon.png"
+            user_icon_path = os.path.join(config_icon_path, f"{location}_icon.png")
+            default_icon_path = os.path.join(cur_path, "icon", f"{location}_icon.png")
+
+            if os.path.exists(user_icon_path):
+                icon_path = user_icon_path
+            else:
+                icon_path = default_icon_path
+
             icon = QtGui.QIcon(icon_path)
             self.sites_comboBox.addItem(icon, location)
 
@@ -93,7 +103,7 @@ class authenticator(Ui_authenticator, QWidget):
 
     @staticmethod
     def seceret_code(site):
-        with open('.auth', 'r') as data:
+        with open(configuration.get_auth_path(), 'r') as data:
             auth = json.load(data)
         return auth[username][site]
 
