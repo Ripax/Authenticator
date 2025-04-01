@@ -13,7 +13,7 @@ class AuthFileManager:
     def _determine_auth_path(self):
         """Determines the correct path for the .auth file based on OS."""
         if self.system == "Windows":
-            auth_dir = os.environ["USERPROFILE"]
+            auth_dir = os.path.join(os.environ["USERPROFILE"], "config\\authenticator\\configs")
         else:  # Linux or macOS (Darwin)
             auth_dir = os.path.join(os.environ["HOME"], "config/authenticator/configs")
 

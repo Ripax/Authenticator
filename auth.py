@@ -42,13 +42,13 @@ def load_auth_data(filepath=configuration.get_auth_path()):
             return json.load(file)
     except json.JSONDecodeError:
         print(f""
-              f"Please check your "
-              f"{
-              filepath
-              } file," 
-              f"it's json based file "
-              f" please be careful while you  edit this."
-              )
+            f"Please check your "
+            f"{
+            filepath
+            } file," 
+            f"it's json based file "
+            f" please be careful while you  edit this."
+            )
 
 
 class authenticator(Ui_authenticator, QWidget):
@@ -65,7 +65,6 @@ class authenticator(Ui_authenticator, QWidget):
         config_icon_path = os.path.expanduser("~/config/authenticator/icons")
         locations = authdata.get(username, {})
         cur_path = os.getcwd()
-        print(f"Location : {locations}\nCurrent path : {cur_path}")
 
         for location in locations.keys():
             user_icon_path = os.path.join(config_icon_path, f"{location}_icon.png")
