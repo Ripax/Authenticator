@@ -54,15 +54,6 @@ class AuthFileManager:
         if self.username not in data:
             data[self.username] = {}
 
-        # # Ensure "appname" exists within the user section
-        # if "appname" not in data[self.username]:
-        #     data[self.username]["appname"] = ""
-        #
-        # # Ensure "site" exists within the user section
-        # if "site" not in data[self.username]:
-        #     data[self.username]["site"] = ""
-
-        # Write back the updated structure
         with open(self.auth_path, "w") as f:
             json.dump(data, f, indent=4)
 
@@ -71,8 +62,14 @@ class AuthFileManager:
         return self.auth_path
 
     def load_stylesheet(self, app):
-        home_path = os.path.expanduser("~")  # Expands `~` to the user's home directory
-        custom_qss = os.path.join(home_path, "config/authenticator/configs", "mainUI.qss")
+        home_path = os.path.expanduser("~")  # Expands `~` to the user's home directory.
+        
+        if platform.system() == "Windows":
+            home_path = os.environ["USERPROFILE"]
+            custom_qss = os.path.join(home_path, "config", "authenticator", "configs", "mainUI.qss")
+        else:
+            custom_qss = os.path.join(home_path, "config", "authenticator", "configs", "mainUI.qss")
+
         default_qss = "ui/qss/mainUI.qss"
 
         qss_file = custom_qss if os.path.exists(custom_qss) else default_qss
@@ -82,6 +79,7 @@ class AuthFileManager:
                 app.setStyleSheet(file.read())
         except Exception as e:
             print(f"Error loading stylesheet: {e}")
+
 
 
 if __name__ == '__main__':
