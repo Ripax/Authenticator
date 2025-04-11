@@ -44,7 +44,6 @@ class Ui_authenticator(object):
         font.setFamily("Baby Doll")
         font.setPointSize(40)
         self.otp.setFont(font)
-        self.otp.setText("")
         self.otp.setAlignment(QtCore.Qt.AlignCenter)
         self.otp.setObjectName("otp")
         self.verticalLayout.addWidget(self.otp)
@@ -139,7 +138,7 @@ class Ui_authenticator(object):
 
     def retranslateUi(self, authenticator):
         _translate = QtCore.QCoreApplication.translate
-        authenticator.setWindowTitle(_translate("authenticator", "2fa for dneg"))
+        authenticator.setWindowTitle(_translate("authenticator", "2fa"))
         self.pushButton.setText(_translate("authenticator", " Copy"))
         self.time_check.setText(_translate("authenticator", "60"))
         self.label_creadit.setToolTip(_translate("authenticator", "@Copyright 2024"))
