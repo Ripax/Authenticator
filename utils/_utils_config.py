@@ -16,7 +16,6 @@ class AuthFileManager:
             auth_dir = os.path.join(os.environ["USERPROFILE"], "config\\authenticator\\configs")
         else:  # Linux or macOS (Darwin)
             auth_dir = os.path.join(os.environ["HOME"], "config/authenticator/configs")
-
         return os.path.join(auth_dir, ".auth")
 
     def ensure_auth_file(self):
