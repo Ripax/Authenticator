@@ -14,7 +14,7 @@ cd "$PROJECT_DIR" || {
 # source venv/bin/activate  # Uncomment this if you're using a virtual environment
 
 # Run the Python application
-PYTHON_EXEC="/usr/bin/python3.12"  # Specify the Python interpreter
+PYTHON_EXEC="$(which python3)"  # Specify the Python interpreter
 ENTRY_POINT="auth.py"                # Replace with your main entry point
 
 # Execute the Python application
