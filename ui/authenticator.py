@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
 class Ui_authenticator(object):
     def setupUi(self, authenticator):
         authenticator.setObjectName("authenticator")
@@ -20,18 +21,18 @@ class Ui_authenticator(object):
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.icon = QtWidgets.QLabel(self.frame)
         self.icon.setStyleSheet("QLabel {\n"
-"    border: 1px solid rgb(43, 43, 43);\n"
-"    border-radius: 4px;\n"
-"}")
+                                "    border: 1px solid rgb(43, 43, 43);\n"
+                                "    border-radius: 4px;\n"
+                                "}")
         self.icon.setText("")
         self.icon.setAlignment(QtCore.Qt.AlignCenter)
         self.icon.setObjectName("icon")
         self.verticalLayout_2.addWidget(self.icon)
         self.OTP_frame = QtWidgets.QFrame(self.frame)
         self.OTP_frame.setStyleSheet("QFrame{\n"
-"    border: 1px solid rgb(43, 43, 43);\n"
-"    border-radius: 4px;\n"
-"}")
+                                     "    border: 1px solid rgb(43, 43, 43);\n"
+                                     "    border-radius: 4px;\n"
+                                     "}")
         self.OTP_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.OTP_frame.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.OTP_frame.setObjectName("OTP_frame")
@@ -51,9 +52,9 @@ class Ui_authenticator(object):
         self.frame_sites = QtWidgets.QFrame(self.frame)
         self.frame_sites.setMaximumSize(QtCore.QSize(16777215, 36))
         self.frame_sites.setStyleSheet("QFrame{\n"
-"    border: 1px solid rgb(43, 43, 43);\n"
-"    border-radius: 4px;\n"
-"}")
+                                       "    border: 1px solid rgb(43, 43, 43);\n"
+                                       "    border-radius: 4px;\n"
+                                       "}")
         self.frame_sites.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame_sites.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame_sites.setObjectName("frame_sites")
@@ -63,33 +64,65 @@ class Ui_authenticator(object):
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.sites_comboBox = QtWidgets.QComboBox(self.frame_sites)
         self.sites_comboBox.setObjectName("sites_comboBox")
+        self.sites_comboBox.setStyleSheet("QComboBox {\n"
+                                          "    border-radius: 3px;\n"
+                                          "    padding: 1px 18px 1px 3px;\n"
+                                          "    min-width: 6em;\n"
+                                          "}\n"
+                                          "\n"
+                                          "QComboBox:on { /* shift the text when the popup opens */\n"
+                                          "    padding-top: 3px;\n"
+                                          "    padding-left: 4px;\n"
+                                          "}\n"
+                                          "\n"
+                                          "QComboBox::drop-down {\n"
+                                          "    subcontrol-origin: padding;\n"
+                                          "    subcontrol-position: top right;\n"
+                                          "    width: 15px;\n"
+                                          "\n"
+                                          "    border-left-width: 1px;\n"
+                                          "    border-left-color: darkgray;\n"
+                                          "    border-left-style: solid; /* just a single line */\n"
+                                          "    border-top-right-radius: 3px; /* same radius as the QComboBox */\n"
+                                          "    border-bottom-right-radius: 3px;\n"
+                                          "}\n"
+                                          "QComboBox::down-arrow {\n"
+                                          "    image: url(:/icon/dropdown_icon.png);\n"
+                                          "    width: 16px;\n"
+                                          "    height: 16px;\n"
+                                          "}\n"
+                                          "\n"
+                                          "QComboBox::down-arrow:on { /* shift the arrow when popup is open */\n"
+                                          "    top: 1px;\n"
+                                          "    left: 1px;\n"
+                                          "}")
         self.horizontalLayout_2.addWidget(self.sites_comboBox)
         self.verticalLayout_2.addWidget(self.frame_sites)
         self.pushButton = QtWidgets.QPushButton(self.frame)
         self.pushButton.setMinimumSize(QtCore.QSize(82, 82))
         self.pushButton.setMaximumSize(QtCore.QSize(16777215, 95))
         self.pushButton.setStyleSheet("QPushButton {\n"
-"    color: rgb(52, 82, 76);\n"
-"    border: 1px solid #8f8f91;\n"
-"    border-radius: 6px;\n"
-"    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
-"                                      stop: 0 #39f0ed, stop: 1 #34faaf);\n"
-"    min-width: 80px;\n"
-"    min-height: 80px;\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
-"                                      stop: 0 #34faaf , stop: 1 #39f0ed,);\n"
-"}\n"
-"\n"
-"QPushButton:flat {\n"
-"    border: none; /* no border for a flat push button */\n"
-"}\n"
-"\n"
-"QPushButton:default {\n"
-"    border-color: navy; /* make the default button prominent */\n"
-"}")
+                                      "    color: rgb(52, 82, 76);\n"
+                                      "    border: 1px solid #8f8f91;\n"
+                                      "    border-radius: 6px;\n"
+                                      "    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
+                                      "                                      stop: 0 #39f0ed, stop: 1 #34faaf);\n"
+                                      "    min-width: 80px;\n"
+                                      "    min-height: 80px;\n"
+                                      "}\n"
+                                      "\n"
+                                      "QPushButton:pressed {\n"
+                                      "    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
+                                      "                                      stop: 0 #34faaf , stop: 1 #39f0ed,);\n"
+                                      "}\n"
+                                      "\n"
+                                      "QPushButton:flat {\n"
+                                      "    border: none; /* no border for a flat push button */\n"
+                                      "}\n"
+                                      "\n"
+                                      "QPushButton:default {\n"
+                                      "    border-color: navy; /* make the default button prominent */\n"
+                                      "}")
         self.pushButton.setIconSize(QtCore.QSize(80, 80))
         self.pushButton.setObjectName("pushButton")
         self.verticalLayout_2.addWidget(self.pushButton)
@@ -110,7 +143,7 @@ class Ui_authenticator(object):
         self.time_check.setFont(font)
         self.time_check.setAlignment(QtCore.Qt.AlignCenter)
         self.time_check.setObjectName("time_check")
-        self.horizontalLayout.addWidget(self.time_check, 0, QtCore.Qt.AlignLeft|QtCore.Qt.AlignBottom)
+        self.horizontalLayout.addWidget(self.time_check, 0, QtCore.Qt.AlignLeft | QtCore.Qt.AlignBottom)
         self.label_creadit = QtWidgets.QLabel(self.footer)
         font = QtGui.QFont()
         font.setFamily("Baby Doll")
@@ -122,13 +155,13 @@ class Ui_authenticator(object):
         font.setStrikeOut(False)
         self.label_creadit.setFont(font)
         self.label_creadit.setStyleSheet("QLabel, QToolTip {\n"
-"    color: rgb(45, 45, 45);\n"
-"    border: 0px solid #222222;\n"
-"    border-radius: 0px;\n"
-"}")
-        self.label_creadit.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing)
+                                         "    color: rgb(45, 45, 45);\n"
+                                         "    border: 0px solid #222222;\n"
+                                         "    border-radius: 0px;\n"
+                                         "}")
+        self.label_creadit.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing)
         self.label_creadit.setObjectName("label_creadit")
-        self.horizontalLayout.addWidget(self.label_creadit, 0, QtCore.Qt.AlignRight|QtCore.Qt.AlignBottom)
+        self.horizontalLayout.addWidget(self.label_creadit, 0, QtCore.Qt.AlignRight | QtCore.Qt.AlignBottom)
         self.verticalLayout_2.addWidget(self.footer)
         self.gridLayout.addWidget(self.frame, 0, 0, 1, 1)
 

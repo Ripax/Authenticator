@@ -2,7 +2,7 @@
 # Author : Anupam Biswas
 # Date : 23 september 2024
 # app name : 2 ass fuck Authenticator.
-from PyQt5.QtGui import QIcon
+from PyQt5.uic.Compiler.qtproxies import QtCore
 
 
 def info():
@@ -19,7 +19,7 @@ from datetime import datetime
 
 import pyotp
 from PyQt5 import QtGui
-from PyQt5.QtCore import QTimer, Qt
+from PyQt5.QtCore import QTimer, Qt, QPoint
 from PyQt5.QtWidgets import QApplication, QWidget, QGraphicsDropShadowEffect, QMessageBox
 
 from ui.authenticator import Ui_authenticator
@@ -49,6 +49,7 @@ def load_auth_data(filepath=configuration.get_auth_path()):
             f"it's json based file "
             f" please be careful while you  edit this."
             )
+        return None
 
 
 class authenticator(Ui_authenticator, QWidget):
@@ -80,7 +81,6 @@ class authenticator(Ui_authenticator, QWidget):
 
         # set Enable Mumbai as default site for authenticator.
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
-
         self.otp.setStyleSheet(u"color: rgb(56, 242, 227);")
 
         shadow = QGraphicsDropShadowEffect()
@@ -99,6 +99,14 @@ class authenticator(Ui_authenticator, QWidget):
 
         self.toggle_sites()
         self.sites_comboBox.currentIndexChanged.connect(self.toggle_sites)
+
+    def mousePressEvent(self, event):
+        self.oldPosition = event.globalPos()
+
+    def mouseMoveEvent(self, event):
+        delta = QPoint(event.globalPos() - self.oldPosition)
+        self.move(self.x() + delta.x(), self.y() + delta.y())
+        self.oldPosition = event.globalPos()
 
     @staticmethod
     def seceret_code(site):

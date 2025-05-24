@@ -2,11 +2,8 @@
   <qresource prefix="icon">
     <file>2fa.png</file>
     <file>computer.png</file>
-    <file>copy.png</file>
-    <file>copy_green.png</file>
-    <file>copy_v01.png</file>
-    <file>copy_v02.png</file>
-    <file>copy_v03.png</file>
-    <file>document.png</file>
+    <file>dropdown_icon.png</file>
+    <file>github_icon.png</file>
+    <file>vk_icon.png</file>
   </qresource>
 </RCC>

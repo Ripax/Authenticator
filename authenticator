@@ -15,7 +15,7 @@ cd "$PROJECT_DIR" || {
 
 # Run the Python application
 PYTHON_EXEC="$(which python3)"  # Specify the Python interpreter
-ENTRY_POINT="auth.py"                # Replace with your main entry point
+ENTRY_POINT="auth.py"           # Replace with your main entry point
 
 # Execute the Python application
 "$PYTHON_EXEC" "$ENTRY_POINT" || {
