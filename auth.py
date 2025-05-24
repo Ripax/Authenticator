@@ -19,7 +19,7 @@ from datetime import datetime
 
 import pyotp
 from PyQt5 import QtGui
-from PyQt5.QtCore import QTimer, Qt
+from PyQt5.QtCore import QTimer, Qt, QPoint
 from PyQt5.QtWidgets import QApplication, QWidget, QGraphicsDropShadowEffect, QMessageBox
 
 from ui.authenticator import Ui_authenticator
@@ -49,12 +49,14 @@ def load_auth_data(filepath=configuration.get_auth_path()):
               f"it's json based file "
               f" please be careful while you  edit this."
               )
-
+        return None
 
 class authenticator(Ui_authenticator, QWidget):
     def __init__(self, authdata):
         super(authenticator, self).__init__()
         self.setupUi(self)
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowTitle(f"[2fA] Authenticator app {username}")
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/icon/computer.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -65,7 +67,6 @@ class authenticator(Ui_authenticator, QWidget):
         config_icon_path = os.path.expanduser("~/config/authenticator/icons")
         locations = authdata.get(username, {})
         cur_path = os.getcwd()
-        print(f"Location : {locations}\nCurrent path : {cur_path}")
 
         for location in locations.keys():
             user_icon_path = os.path.join(config_icon_path, f"{location}_icon.png")
@@ -101,6 +102,14 @@ class authenticator(Ui_authenticator, QWidget):
         self.toggle_sites()
         self.sites_comboBox.currentIndexChanged.connect(self.toggle_sites)
 
+    def mousePressEvent(self, event):
+        self.oldPosition = event.globalPos()
+
+    def mouseMoveEvent(self, event):
+        delta = QPoint(event.globalPos() - self.oldPosition)
+        self.move(self.x() + delta.x(), self.y() + delta.y())
+        self.oldPosition = event.globalPos()
+
     @staticmethod
     def seceret_code(site):
         with open(configuration.get_auth_path(), 'r') as data:
@@ -110,7 +119,6 @@ class authenticator(Ui_authenticator, QWidget):
     def toggle_sites(self):
         _location = self.sites_comboBox.currentText()
         self.generate_totp(secret=self.seceret_code(_location))
-
 
     def generate_totp(self, secret=None):
         # Get the secret from the QRCode, which is shared by your Organization.
