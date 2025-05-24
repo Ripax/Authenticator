@@ -9,7 +9,7 @@ def info():
     __Author__ = 'Anupam Biswas'
     __version__ = '1.0.7'
     __date__ = '23 september 2024'
-    __app_name__ = '2 ass fuck Authenticator.'
+    __app_name__ = '2af Authenticator.'
 
 import json
 import os
