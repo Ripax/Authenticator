@@ -80,16 +80,17 @@ jobs:
 
       - name: Create release archives
         run: |
-          # Get all Git-tracked files + any .exr or .run files (even if untracked)
-          find . -name "*.exr" -o -name "*.EXR" -o -name "*.run" > extra_files.txt
-          git ls-files -z | xargs -0 > git_files.txt
+          # Get Git-tracked files (newline-separated)
+          git ls-files > git_files.txt
       
+          # Find all .exr and .run files (newline-separated, relative paths)
+          find . -type f \( -iname "*.exr" -o -iname "*.run" \) > extra_files.txt
+      
+          # Combine and deduplicate
           cat git_files.txt extra_files.txt | sort | uniq > all_files.txt
       
-          # Zip everything
+          # Archive
           zip -@ release-${{ env.NEW_TAG }}.zip < all_files.txt
-      
-          # Tar everything
           tar -czf release-${{ env.NEW_TAG }}.tar.gz --files-from=all_files.txt
 
       - name: Publish GitHub Release
