@@ -80,8 +80,17 @@ jobs:
 
       - name: Create release archives
         run: |
-          git ls-files -z | xargs -0 zip release-${{ env.NEW_TAG }}.zip
-          git ls-files -z | xargs -0 tar -czf release-${{ env.NEW_TAG }}.tar.gz
+          # Get all Git-tracked files + any .exr or .run files (even if untracked)
+          find . -name "*.exr" -o -name "*.EXR" -o -name "*.run" > extra_files.txt
+          git ls-files -z | xargs -0 > git_files.txt
+      
+          cat git_files.txt extra_files.txt | sort | uniq > all_files.txt
+      
+          # Zip everything
+          zip -@ release-${{ env.NEW_TAG }}.zip < all_files.txt
+      
+          # Tar everything
+          tar -czf release-${{ env.NEW_TAG }}.tar.gz --files-from=all_files.txt
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v1
@@ -91,5 +100,8 @@ jobs:
           files: |
             release-${{ env.NEW_TAG }}.zip
             release-${{ env.NEW_TAG }}.tar.gz
+            *.EXR
+            *.exr
+            *.run
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
