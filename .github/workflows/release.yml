@@ -14,8 +14,7 @@ jobs:
       - run: echo "Linting skipped"
 
   release:
-    name: Semantic Tag & GitHub Release
-    # needs: lint  ← ❌ REMOVE THIS LINE to prevent skipping
+    name: Semantic Version Tag & Release
     runs-on: ubuntu-latest
 
     steps:
@@ -53,25 +52,26 @@ jobs:
           git config user.name "Ripax"
           git config user.email "ripanbiswas007@gmail.com"
           git tag ${{ env.NEW_TAG }}
-          git push origin ${{ env.NEW_TAG }}
+          git push https://x-access-token:${{ secrets.PERSONAL_TOKEN }}@github.com/${{ github.repository }} ${{ env.NEW_TAG }}
 
       - name: Generate changelog
         id: changelog
         run: |
+          git log ${{ env.LATEST_TAG }}..HEAD --pretty=format:"- %s" > changelog.txt
           echo "CHANGELOG<<EOF" >> $GITHUB_ENV
-          git log ${{ env.LATEST_TAG }}..HEAD --pretty=format:"- %s" >> $GITHUB_ENV
+          cat changelog.txt >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
       - name: Update CHANGELOG.md
         run: |
           DATE=$(date +'%Y-%m-%d')
-          echo -e "## [${{ env.NEW_TAG }}] - $DATE\n${{ env.CHANGELOG }}\n" | cat - CHANGELOG.md > temp && mv temp CHANGELOG.md
+          echo -e "## [${{ env.NEW_TAG }}] - $DATE\n$(cat changelog.txt)\n" | cat - CHANGELOG.md > temp && mv temp CHANGELOG.md
 
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git config user.name "Ripax"
+          git config user.email "ripanbiswas007@gmail.com"
           git add CHANGELOG.md
           git commit -m "docs: update changelog for ${{ env.NEW_TAG }}"
-          git push origin master
+          git push https://x-access-token:${{ secrets.PERSONAL_TOKEN }}@github.com/${{ github.repository }} master
 
       - name: Create release archives
         run: |
