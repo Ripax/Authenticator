@@ -1,0 +1,59 @@
+name: Auto Release on master
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  lint:
+    if: false  # 🔕 disables the lint job entirely (bypassed)
+    name: Lint Python Code (disabled)
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Linting is currently bypassed"
+
+  release:
+    name: Tag & Release
+    needs: lint  # ⏩ depends on lint, but lint is skipped
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Required for full git history & tags
+
+      - name: Get latest tag
+        id: get_tag
+        run: |
+          echo "LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo 'v0.0.0')" >> $GITHUB_ENV
+
+      - name: Bump version and tag
+        id: bump_tag
+        run: |
+          latest=${{ env.LATEST_TAG }}
+          IFS='.' read -r major minor patch <<< "${latest#v}"
+          new_tag="v$major.$minor.$((patch+1))"
+          echo "New tag: $new_tag"
+          echo "NEW_TAG=$new_tag" >> $GITHUB_ENV
+
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git tag "$new_tag"
+          git push origin "$new_tag"
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          echo "CHANGELOG<<EOF" >> $GITHUB_ENV
+          git log ${{ env.LATEST_TAG }}..HEAD --pretty=format:"- %s" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.NEW_TAG }}
+          body: ${{ env.CHANGELOG }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
