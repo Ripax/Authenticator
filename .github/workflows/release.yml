@@ -14,7 +14,7 @@ jobs:
       - run: echo "Linting skipped"
 
   release:
-    name: Semantic Version Tag & Release
+    name: Semantic Tag & GitHub Release
     runs-on: ubuntu-latest
 
     steps:
@@ -23,15 +23,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get latest tag
-        id: get_tag
-        run: |
-          echo "LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo 'v0.0.0')" >> $GITHUB_ENV
-
-      - name: Determine new version (semantic)
+      - name: Determine next version (semantic, avoid duplicates)
         id: version
         run: |
-          latest=${{ env.LATEST_TAG }}
+          latest=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "LATEST_TAG=$latest" >> $GITHUB_ENV
+
           IFS='.' read -r major minor patch <<< "${latest#v}"
 
           commit_msg=$(git log -1 --pretty=%s)
@@ -39,13 +36,18 @@ jobs:
 
           if [[ "$commit_msg" == feat:* ]]; then
             new_tag="v$major.$((minor+1)).0"
-          elif [[ "$commit_msg" == fix:* ]]; then
-            new_tag="v$major.$minor.$((patch+1))"
           else
             new_tag="v$major.$minor.$((patch+1))"
           fi
 
+          git fetch --tags
+          if git rev-parse "$new_tag" >/dev/null 2>&1; then
+            echo "Tag $new_tag already exists. Bumping minor to avoid conflict..."
+            new_tag="v$major.$((minor+1)).0"
+          fi
+
           echo "NEW_TAG=$new_tag" >> $GITHUB_ENV
+          echo "Final tag to use: $new_tag"
 
       - name: Create tag and push
         run: |
@@ -87,4 +89,4 @@ jobs:
             release-${{ env.NEW_TAG }}.zip
             release-${{ env.NEW_TAG }}.tar.gz
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
