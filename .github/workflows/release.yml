@@ -1,0 +1,90 @@
+name: Auto Release on master
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  lint:
+    if: false
+    name: Lint Python Code (disabled)
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Linting skipped"
+
+  release:
+    name: Semantic Version Tag & Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get latest tag
+        id: get_tag
+        run: |
+          echo "LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo 'v0.0.0')" >> $GITHUB_ENV
+
+      - name: Determine new version (semantic)
+        id: version
+        run: |
+          latest=${{ env.LATEST_TAG }}
+          IFS='.' read -r major minor patch <<< "${latest#v}"
+
+          commit_msg=$(git log -1 --pretty=%s)
+          echo "Latest commit message: $commit_msg"
+
+          if [[ "$commit_msg" == feat:* ]]; then
+            new_tag="v$major.$((minor+1)).0"
+          elif [[ "$commit_msg" == fix:* ]]; then
+            new_tag="v$major.$minor.$((patch+1))"
+          else
+            new_tag="v$major.$minor.$((patch+1))"
+          fi
+
+          echo "NEW_TAG=$new_tag" >> $GITHUB_ENV
+
+      - name: Create tag and push
+        run: |
+          git config user.name "Ripax"
+          git config user.email "ripanbiswas007@gmail.com"
+          git tag ${{ env.NEW_TAG }}
+          git push https://x-access-token:${{ secrets.PERSONAL_TOKEN }}@github.com/${{ github.repository }} ${{ env.NEW_TAG }}
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          git log ${{ env.LATEST_TAG }}..HEAD --pretty=format:"- %s" > changelog.txt
+          echo "CHANGELOG<<EOF" >> $GITHUB_ENV
+          cat changelog.txt >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Update CHANGELOG.md
+        run: |
+          DATE=$(date +'%Y-%m-%d')
+          echo -e "## [${{ env.NEW_TAG }}] - $DATE\n$(cat changelog.txt)\n" | cat - CHANGELOG.md > temp && mv temp CHANGELOG.md
+
+          git config user.name "Ripax"
+          git config user.email "ripanbiswas007@gmail.com"
+          git add CHANGELOG.md
+          git commit -m "docs: update changelog for ${{ env.NEW_TAG }}"
+          git push https://x-access-token:${{ secrets.PERSONAL_TOKEN }}@github.com/${{ github.repository }} master
+
+      - name: Create release archives
+        run: |
+          zip -r release-${{ env.NEW_TAG }}.zip . -x ".git/*"
+          tar -czf release-${{ env.NEW_TAG }}.tar.gz . --exclude=.git
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.NEW_TAG }}
+          body: ${{ env.CHANGELOG }}
+          files: |
+            release-${{ env.NEW_TAG }}.zip
+            release-${{ env.NEW_TAG }}.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
