@@ -1,3 +1,6 @@
+## [v1.8.0] - 2025-07-09
+- feat: update release manager for create release archive for exr,.run_v01
+
 2FA Authenticator
 =================
 
