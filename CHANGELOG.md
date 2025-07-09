@@ -1,3 +1,6 @@
+## [v1.2.3] - 2025-07-09
+
+
 - name: Update CHANGELOG.md
   run: |
     DATE=$(date +'%Y-%m-%d')
