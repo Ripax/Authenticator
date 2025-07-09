@@ -7,22 +7,22 @@ on:
 
 jobs:
   lint:
-    if: false  # Skipped
+    if: false
     name: Lint Python Code (disabled)
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Linting is currently bypassed"
+      - run: echo "Linting skipped"
 
   release:
     name: Semantic Tag & GitHub Release
-    needs: lint
+    # needs: lint  ← ❌ REMOVE THIS LINE to prevent skipping
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Required for full history
+          fetch-depth: 0
 
       - name: Get latest tag
         id: get_tag
@@ -47,28 +47,38 @@ jobs:
           fi
 
           echo "NEW_TAG=$new_tag" >> $GITHUB_ENV
-          echo "New tag will be: $new_tag"
 
-      - name: Create new tag and push
+      - name: Create tag and push
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git tag ${{ env.NEW_TAG }}
           git push origin ${{ env.NEW_TAG }}
 
-      - name: Generate changelog from commits
+      - name: Generate changelog
         id: changelog
         run: |
           echo "CHANGELOG<<EOF" >> $GITHUB_ENV
           git log ${{ env.LATEST_TAG }}..HEAD --pretty=format:"- %s" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
+      - name: Update CHANGELOG.md
+        run: |
+          DATE=$(date +'%Y-%m-%d')
+          echo -e "## [${{ env.NEW_TAG }}] - $DATE\n${{ env.CHANGELOG }}\n" | cat - CHANGELOG.md > temp && mv temp CHANGELOG.md
+
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add CHANGELOG.md
+          git commit -m "docs: update changelog for ${{ env.NEW_TAG }}"
+          git push origin master
+
       - name: Create release archives
         run: |
           zip -r release-${{ env.NEW_TAG }}.zip . -x ".git/*"
           tar -czf release-${{ env.NEW_TAG }}.tar.gz . --exclude=.git
 
-      - name: Create GitHub Release with Assets
+      - name: Publish GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ env.NEW_TAG }}
