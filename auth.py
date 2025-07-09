@@ -7,7 +7,7 @@ from PyQt5.uic.Compiler.qtproxies import QtCore
 
 def info():
     __Author__ = 'Anupam Biswas'
-    __version__ = '1.0.7'
+    __version__ = '1.2.4'
     __date__ = '23 september 2024'
     __app_name__ = '2af Authenticator.'
 
