@@ -18,9 +18,10 @@ import time
 from datetime import datetime
 
 import pyotp
-from PyQt5 import QtGui
-from PyQt5.QtCore import QTimer, Qt, QPoint
-from PyQt5.QtWidgets import QApplication, QWidget, QGraphicsDropShadowEffect, QMessageBox
+from PyQt5 import QtGui, QtMultimedia
+from PyQt5.QtCore import QTimer, Qt, QPoint, QUrl, QPropertyAnimation, QEasingCurve
+from PyQt5.QtWidgets import QApplication, QWidget, QGraphicsOpacityEffect, QGraphicsDropShadowEffect, QMessageBox, QLabel
+
 
 from ui.authenticator import Ui_authenticator
 from utils._utils_config import AuthFileManager
@@ -61,6 +62,11 @@ class authenticator(Ui_authenticator, QWidget):
         icon.addPixmap(QtGui.QPixmap(":/icon/computer.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.pushButton.setIcon(icon)
         self.icon.setPixmap(QtGui.QPixmap(":/icon/2fa.png"))
+
+        # Setup sound effect
+        self.sound = QtMultimedia.QSoundEffect()
+        self.sound.setSource(QUrl.fromLocalFile("aud/click.wav"))  # Place click.wav in your script's directory
+        self.sound.setVolume(0.9)
 
         # set data to Combobox from .auth data.
         config_icon_path = os.path.expanduser("~/config/authenticator/icons")
@@ -153,10 +159,42 @@ class authenticator(Ui_authenticator, QWidget):
         totp = self.otp.text()
         clipboard = QApplication.clipboard()
         clipboard.setText(str(totp))
-        # QMessageBox.information(self, "Information", "Copied.")
-        self.msg_box = QMessageBox(QMessageBox.Information, "Information", "Copied.")
-        self.msg_box.show()
-        QTimer.singleShot(2000, self.msg_box.close)  # Close after 2 seconds
+        self.sound.play()
+
+        # If an overlay already exists, remove it before creating a new one
+        if hasattr(self, "overlay_label") and self.overlay_label is not None:
+            self.overlay_label.deleteLater()
+            self.overlay_label = None
+
+        # Create a new overlay label
+        self.overlay_label = QLabel("Copied", self.pushButton)
+        self.overlay_label.setAlignment(Qt.AlignCenter)
+        self.overlay_label.setFont(self.pushButton.font())
+        self.overlay_label.setStyleSheet("color: black; background: transparent; border: none;")
+        self.overlay_label.resize(self.pushButton.size())
+        self.overlay_label.move(60, 0)
+        self.overlay_label.show()
+
+        # Create and apply opacity effect
+        self.text_opacity = QGraphicsOpacityEffect()
+        self.overlay_label.setGraphicsEffect(self.text_opacity)
+        self.text_opacity.setOpacity(0.7)
+
+        # Create fade-out animation
+        self.fade_out_text = QPropertyAnimation(self.text_opacity, b"opacity")
+        self.fade_out_text.setDuration(800)
+        self.fade_out_text.setStartValue(0.7)
+        self.fade_out_text.setEndValue(0)
+        self.fade_out_text.setEasingCurve(QEasingCurve.InOutQuad)
+
+        def on_fade_finished():
+            self.overlay_label.deleteLater()
+            self.overlay_label = None
+
+        self.fade_out_text.finished.connect(on_fade_finished)
+
+        # Start fade-out after 2 seconds
+        QTimer.singleShot(2000, self.fade_out_text.start)
 
 
 # For widgets

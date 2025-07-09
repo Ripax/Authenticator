@@ -171,8 +171,5 @@ class Ui_authenticator(object):
 
     def retranslateUi(self, authenticator):
         _translate = QtCore.QCoreApplication.translate
-        authenticator.setWindowTitle(_translate("authenticator", "2fa"))
-        self.pushButton.setText(_translate("authenticator", " Copy"))
-        self.time_check.setText(_translate("authenticator", "60"))
         self.label_creadit.setToolTip(_translate("authenticator", "@Copyright 2024"))
         self.label_creadit.setText(_translate("authenticator", "@HTMLDigger"))
