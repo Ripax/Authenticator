@@ -7,53 +7,74 @@ on:
 
 jobs:
   lint:
-    if: false  # 🔕 disables the lint job entirely (bypassed)
+    if: false  # Skipped
     name: Lint Python Code (disabled)
     runs-on: ubuntu-latest
     steps:
       - run: echo "Linting is currently bypassed"
 
   release:
-    name: Tag & Release
-    needs: lint  # ⏩ depends on lint, but lint is skipped
+    name: Semantic Tag & GitHub Release
+    needs: lint
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Required for full git history & tags
+          fetch-depth: 0  # Required for full history
 
       - name: Get latest tag
         id: get_tag
         run: |
           echo "LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo 'v0.0.0')" >> $GITHUB_ENV
 
-      - name: Bump version and tag
-        id: bump_tag
+      - name: Determine new version (semantic)
+        id: version
         run: |
           latest=${{ env.LATEST_TAG }}
           IFS='.' read -r major minor patch <<< "${latest#v}"
-          new_tag="v$major.$minor.$((patch+1))"
-          echo "New tag: $new_tag"
-          echo "NEW_TAG=$new_tag" >> $GITHUB_ENV
 
+          commit_msg=$(git log -1 --pretty=%s)
+          echo "Latest commit message: $commit_msg"
+
+          if [[ "$commit_msg" == feat:* ]]; then
+            new_tag="v$major.$((minor+1)).0"
+          elif [[ "$commit_msg" == fix:* ]]; then
+            new_tag="v$major.$minor.$((patch+1))"
+          else
+            new_tag="v$major.$minor.$((patch+1))"
+          fi
+
+          echo "NEW_TAG=$new_tag" >> $GITHUB_ENV
+          echo "New tag will be: $new_tag"
+
+      - name: Create new tag and push
+        run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git tag "$new_tag"
-          git push origin "$new_tag"
+          git tag ${{ env.NEW_TAG }}
+          git push origin ${{ env.NEW_TAG }}
 
-      - name: Generate changelog
+      - name: Generate changelog from commits
         id: changelog
         run: |
           echo "CHANGELOG<<EOF" >> $GITHUB_ENV
           git log ${{ env.LATEST_TAG }}..HEAD --pretty=format:"- %s" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      - name: Create GitHub Release
+      - name: Create release archives
+        run: |
+          zip -r release-${{ env.NEW_TAG }}.zip . -x ".git/*"
+          tar -czf release-${{ env.NEW_TAG }}.tar.gz . --exclude=.git
+
+      - name: Create GitHub Release with Assets
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ env.NEW_TAG }}
           body: ${{ env.CHANGELOG }}
+          files: |
+            release-${{ env.NEW_TAG }}.zip
+            release-${{ env.NEW_TAG }}.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
