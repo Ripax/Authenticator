@@ -60,9 +60,12 @@ jobs:
         id: changelog
         run: |
           git log ${{ env.LATEST_TAG }}..HEAD --pretty=format:"- %s" > changelog.txt
-          echo "CHANGELOG<<EOF" >> $GITHUB_ENV
-          cat changelog.txt >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          changelog=$(cat changelog.txt)
+          # Escape % for GitHub output
+          changelog="${changelog//'%'/'%25'}"
+          changelog="${changelog//$'\n'/'%0A'}"
+          changelog="${changelog//$'\r'/'%0D'}"
+          echo "changelog=$changelog" >> $GITHUB_OUTPUT
 
       - name: Update CHANGELOG.md
         run: |
@@ -84,7 +87,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ env.NEW_TAG }}
-          body: ${{ env.CHANGELOG }}
+          body: ${{ steps.changelog.outputs.changelog }}
           files: |
             release-${{ env.NEW_TAG }}.zip
             release-${{ env.NEW_TAG }}.tar.gz
