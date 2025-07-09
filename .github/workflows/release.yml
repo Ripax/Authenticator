@@ -80,8 +80,8 @@ jobs:
 
       - name: Create release archives
         run: |
-          zip -r release-${{ env.NEW_TAG }}.zip . -x ".git/*"
-          tar -czf release-${{ env.NEW_TAG }}.tar.gz . --exclude=.git
+          zip -r release-${{ env.NEW_TAG }}.zip . -x ".git/*" "./.git/*"
+          tar --exclude=.git -czf release-${{ env.NEW_TAG }}.tar.gz .
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v1
