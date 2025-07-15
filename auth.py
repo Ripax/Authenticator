@@ -16,16 +16,16 @@ import os
 import sys
 import time
 from datetime import datetime
-
+from pathlib import Path
 import pyotp
 from PyQt5 import QtGui, QtMultimedia
 from PyQt5.QtCore import QTimer, Qt, QPoint, QUrl, QPropertyAnimation, QEasingCurve
 from PyQt5.QtWidgets import QApplication, QWidget, QGraphicsOpacityEffect, QGraphicsDropShadowEffect, QMessageBox, QLabel
 
-
 from ui.authenticator import Ui_authenticator
 from utils._utils_config import AuthFileManager
-from icon import resource
+
+from icon import resource   # noqa: F401  (suppress unused-import warning)
 
 date = datetime.now()
 month = date.strftime("%B")
@@ -64,9 +64,10 @@ class authenticator(Ui_authenticator, QWidget):
         self.icon.setPixmap(QtGui.QPixmap(":/icon/2fa.png"))
 
         # Setup sound effect
-        self.sound = QtMultimedia.QSoundEffect()
-        self.sound.setSource(QUrl.fromLocalFile("aud/click.wav"))  # Place click.wav in your script's directory
-        self.sound.setVolume(0.9)
+        sound_path = Path(__file__).parent / "sound" / "clip02.wav"
+        self.effects = QtMultimedia.QSoundEffect(self)
+        self.effects.setSource(QUrl.fromLocalFile(str(sound_path)))
+        self.effects.setVolume(0.9)
 
         # set data to Combobox from .auth data.
         config_icon_path = os.path.expanduser("~/config/authenticator/icons")
@@ -159,7 +160,7 @@ class authenticator(Ui_authenticator, QWidget):
         totp = self.otp.text()
         clipboard = QApplication.clipboard()
         clipboard.setText(str(totp))
-        self.sound.play()
+        self.effects.play()
 
         # If an overlay already exists, remove it before creating a new one
         if hasattr(self, "overlay_label") and self.overlay_label is not None:

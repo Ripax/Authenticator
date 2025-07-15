@@ -1,0 +1,13 @@
+<RCC>
+  <qresource prefix="/icon">
+    <file>2fa.png</file>
+    <file>computer.png</file>
+    <file>dropdown_icon.png</file>
+    <file>github_icon.png</file>
+    <file>vk_icon.png</file>
+  </qresource>
+
+  <qresource prefix="/sounds">
+    <file>../aud/click.wav</file>
+  </qresource>
+</RCC>
