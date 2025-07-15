@@ -1,3 +1,7 @@
+## [v1.9.1] - 2025-07-15
+- Update README.md
+- docs: update changelog for v1.9.0
+
 ## [v1.9.0] - 2025-07-15
 - feat: refine the code clicks, added the sound for copy the otp
 
