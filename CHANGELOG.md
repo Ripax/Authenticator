@@ -1,3 +1,7 @@
+## [v1.9.2] - 2025-07-15
+- Update release.yml
+- docs: update changelog for v1.9.1
+
 ## [v1.9.1] - 2025-07-15
 - Update README.md
 - docs: update changelog for v1.9.0
