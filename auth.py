@@ -53,9 +53,9 @@ def load_auth_data(filepath=configuration.get_auth_path()):
         return None
 
 
-class authenticator(Ui_authenticator, QWidget):
+class Authenticator(Ui_authenticator, QWidget):
     def __init__(self, authdata):
-        super(authenticator, self).__init__()
+        super(Authenticator, self).__init__()
         self.setupUi(self)
         self.setWindowTitle(f"[2fA] Authenticator app {username}")
         icon = QtGui.QIcon()
@@ -202,7 +202,7 @@ class authenticator(Ui_authenticator, QWidget):
 if __name__ == '__main__':
     auth_data = load_auth_data()
     app = QApplication(sys.argv)
-    widgets = authenticator(auth_data)
+    widgets = Authenticator(auth_data)
     configuration.load_stylesheet(app)
     widgets.show()
     sys.exit(app.exec_())
